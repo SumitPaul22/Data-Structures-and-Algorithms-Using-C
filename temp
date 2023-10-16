@@ -1,0 +1,222 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+  int data;
+  struct node* prev;
+  struct node* next;
+};
+
+struct node* start = NULL;
+
+void create_list(int data) {
+  struct node* q = malloc(sizeof(struct node));
+  q->data = data;
+  q->next = NULL;
+
+  if (start == NULL) {
+    q->prev = NULL;
+    start = q;
+  } else {
+    q->prev = start;
+    start = q;
+  }
+}
+
+void add_begin(int data) {
+  struct node* temp = malloc(sizeof(struct node));
+  temp->data = data;
+  temp->next = start;
+  temp->prev = NULL;
+
+  if (start != NULL) {
+    start->prev = temp;
+  }
+
+  start = temp;
+}
+
+void add_specific(int m, int position) {
+  if (position < 0) {
+    printf("Invalid position\n");
+    return;
+  }
+
+  struct node* q = start;
+  for (int i = 0; i < position; i++) {
+    q = q->next;
+  }
+
+  struct node* temp = malloc(sizeof(struct node));
+  temp->data = m;
+  temp->next = q->next;
+  temp->prev = q;
+
+  if (q->next != NULL) {
+    q->next->prev = temp;
+  }
+
+  q->next = temp;
+}
+
+void del(int m) {
+  if (start == NULL) {
+    printf("List is empty\n");
+    return;
+  }
+
+  struct node* q = start;
+  while (q != NULL) {
+    if (q->data == m) {
+      if (q == start) {
+        start = start->next;
+        if (start != NULL) {
+          start->prev = NULL;
+        }
+      } else if (q->next == NULL) {
+        q->prev->next = NULL;
+      } else {
+        q->prev->next = q->next;
+        q->next->prev = q->prev;
+      }
+
+      free(q);
+      break;
+    }
+
+    q = q->next;
+  }
+
+  if (q == NULL) {
+    printf("Data not found in the list\n");
+  }
+}
+
+void del_specific(int position) {
+  if (position < 0) {
+    printf("Invalid position\n");
+    return;
+  }
+
+  struct node* q = start;
+  for (int i = 0; i < position; i++) {
+    q = q->next;
+  }
+
+  if (q == start) {
+    start = start->next;
+    if (start != NULL) {
+      start->prev = NULL;
+    }
+  } else if (q->next == NULL) {
+    q->prev->next = NULL;
+  } else {
+    q->prev->next = q->next;
+    q->next->prev = q->prev;
+  }
+
+  free(q);
+}
+
+void rev() {
+  struct node* p1 = start;
+  struct node* p2 = p1->next;
+  struct node* p3 = p2->next;
+
+  p1->prev = NULL;
+  p1->next = NULL;
+
+  while (p3 != NULL) {
+    p2->prev = p1;
+    p2->next = p1;
+
+    p1 = p2;
+    p2 = p3;
+    p3 = p2->next;
+  }
+
+  start = p2;
+}
+
+void display() {
+  struct node* q = start;
+  while (q != NULL) {
+    printf("%d\t", q->data);
+    q = q->next;
+  }
+
+  printf("\n");
+}
+int main() 
+{
+  int choice;
+  int data, position;
+
+  do{
+      printf("Options:\n");
+      printf("1. Create a list\n");
+      printf("2. Add an element at the beginning\n");
+      printf("3. Add an element at a specific position\n");
+      printf("4. Delete an element with a value\n");
+      printf("5. Delete an element at a specific position\n");
+      printf("6. Reverse the list\n");
+      printf("7. Display the list\n");
+      printf("8. Exit\n");
+      printf("Enter your choice: ");
+      scanf("%d", &choice);
+      switch (choice) 
+      {
+          case 1:
+            printf("Enter the data to be inserted in the list: ");
+            scanf("%d", &data);
+            create_list(data);
+            printf("List created successfully\n");
+            printf("\n");
+            break;
+          case 2:
+            printf("Enter the data to be inserted at the beginning: ");
+            scanf("%d", &data);
+            add_begin(data);
+            printf("Element added at the beginning successfully\n");
+            printf("\n");
+            break;
+          case 3:
+            printf("Enter the data to be inserted at: ");
+            scanf("%d", &data);
+            printf("Enter the position where the data is to be inserted at: ");
+            scanf("%d", &position);
+            add_specific(data, position);
+            printf("\n\n");
+            break;
+          case 4:
+            printf("Enter the value to be deleted from the list: ");
+            scanf("%d", &data);
+            del(data);
+            printf("\n");
+            break;
+          case 5:
+            printf("Enter the position of the element to be deleted from the list: ");
+            scanf("%d", &position);
+            del_specific(position);
+            printf("\n");
+            break; 
+          case 6:
+            rev();
+            printf("List reversed successfully\n");
+            printf("\n");
+            break;
+          case 7:
+            display();
+            printf("\n");
+            break;
+          case 8:
+            exit(0);
+            break;
+          default:
+            printf("Invalid choice\n");
+            break;
+      }
+  }while(choice!=8);
+  printf("\nExiting the program\n"); 
+  return 0;
+}
